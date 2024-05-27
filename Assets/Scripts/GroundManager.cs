@@ -16,7 +16,8 @@ public class GroundManager : MonoBehaviour
 
     void Start()
     {
-        objBackGround = GameObject.Find("BackGround");//코드로 찾음
+        objBackGround = transform.Find("BackGround").gameObject;
+
         Transform trsTop = objBackGround.transform.Find("Top");
         Transform trsMid = objBackGround.transform.Find("Mid");
         Transform trsBot = objBackGround.transform.Find("Bot");

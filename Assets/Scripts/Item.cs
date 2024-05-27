@@ -22,10 +22,9 @@ public class Item : MonoBehaviour
 
     Limiter limiter;
 
+
     private void Awake()
     {
-
-        // eItemType evalue = (eItemType)System.Enum.Parse(typeof(eItemType), "PowerUp");
         moveSpeed = Random.Range(minSpeed, maxSpeed); //1~3까지 어떤 사이값의 속도
         moveDirection.x = Random.Range(-1.0f, 1.0f);
         moveDirection.y = Random.Range(-1.0f, 1.0f);

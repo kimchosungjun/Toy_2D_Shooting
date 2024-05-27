@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
+    bool isShootEnemy = true;
 
     //적기에 닿았을때 or 플레이어에 닿았을때
     //몇초뒤에 사라진다고 명령했을때
@@ -18,13 +19,13 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)//collision은 상대 콜리전
     {
         //때릴 대상을 정확히 할 필요가 있음
-        if (collision.tag == "Enemy")
+        if (isShootEnemy == false && collision.tag == "Enemy")
         {
             Destroy(gameObject);//총알 본인이 삭제
             Enemy enemy = collision.GetComponent<Enemy>();
             enemy.Hit(1);
         }
-        if (collision.tag == "Player")
+        if (isShootEnemy == true && collision.tag == "Player")
         {
             Destroy(gameObject);//총알 본인이 삭제
         }
@@ -38,5 +39,10 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         transform.position += transform.up * moveSpeed * Time.deltaTime;
+    }
+
+    public void ShootPlayer()
+    {
+        isShootEnemy = false;
     }
 }

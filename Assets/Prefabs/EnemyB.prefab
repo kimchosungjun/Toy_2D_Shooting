@@ -33,7 +33,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2932814921110050333
 SpriteRenderer:
@@ -102,6 +102,7 @@ MonoBehaviour:
   moveSpeed: 8
   hp: 4
   hitSprite: {fileID: -1788989992, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
+  colorHaveItem: {r: 1, g: 0, b: 0.85642624, a: 1}
 --- !u!50 &7336236141100702072
 Rigidbody2D:
   serializedVersion: 4
