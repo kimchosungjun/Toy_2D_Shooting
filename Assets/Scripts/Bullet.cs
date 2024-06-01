@@ -28,6 +28,8 @@ public class Bullet : MonoBehaviour
         if (isShootEnemy == true && collision.tag == "Player")
         {
             Destroy(gameObject);//총알 본인이 삭제
+            Player player = collision.GetComponent<Player>();
+            player.Hit();
         }
     }
 

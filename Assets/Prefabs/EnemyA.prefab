@@ -103,6 +103,7 @@ MonoBehaviour:
   hp: 5
   hitSprite: {fileID: 1769431917, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   colorHaveItem: {r: 0, g: 1, b: 0.2262168, a: 1}
+  score: 100
 --- !u!50 &-7490423749476910067
 Rigidbody2D:
   serializedVersion: 4

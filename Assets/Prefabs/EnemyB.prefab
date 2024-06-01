@@ -99,10 +99,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7699575483530a84aa734ad83a2454cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyType: 1
   moveSpeed: 8
   hp: 4
   hitSprite: {fileID: -1788989992, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   colorHaveItem: {r: 1, g: 0, b: 0.85642624, a: 1}
+  score: 200
 --- !u!50 &7336236141100702072
 Rigidbody2D:
   serializedVersion: 4

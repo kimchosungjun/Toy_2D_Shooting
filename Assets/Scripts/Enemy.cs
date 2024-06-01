@@ -8,6 +8,16 @@ public class Enemy : MonoBehaviour
     //private 자식에게 아무데이터도 전달 혹은 활용할수 있도록 제공하지 않음
     //protected 선언시 자식도 활용할수 있도록 해줌
 
+    public enum eEnemyType
+    {
+        EnemyA,
+        EnemyB,
+        EnemyC,
+        EnemyBoss,
+    }
+
+    [SerializeField] protected eEnemyType enemyType;
+
     #region 프로텍티드 데이터들
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float hp;
@@ -24,6 +34,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] Color colorHaveItem;
     #endregion
 
+    [Header("파괴시 점수")]
+    [SerializeField] protected int score;//자신이 파괴 되었을때 몇점을 올려줄것인지
+
     private void OnBecameInvisible()
     {
         Destroy(gameObject);
@@ -32,6 +45,14 @@ public class Enemy : MonoBehaviour
     protected virtual void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (gameManager != null)
+        { 
+            gameManager.AddScore(score);
+        }
     }
 
     protected virtual void Start()
@@ -50,6 +71,7 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         moving();
+        shooting();
     }
 
     protected virtual void moving()
@@ -58,6 +80,11 @@ public class Enemy : MonoBehaviour
 
         //transform.position += Vector3.down * moveSpeed * Time.deltaTime;
         //transform.position += transform.rotation * Vector3.down * moveSpeed * Time.deltaTime;
+    }
+
+    protected virtual void shooting()
+    {
+        
     }
 
     public virtual void Hit(float _damage)
@@ -72,7 +99,7 @@ public class Enemy : MonoBehaviour
         if (hp <= 0)
         {
             isDied = true;
-            Destroy(gameObject);
+            Destroy(gameObject);//삭제를 예약
             //매니저로부터 받아온 폭발 연출을 내 위치에 생성하고 부모로 사용중인 레이어에 만들어줌
             GameObject go = Instantiate(fabExplosion, transform.position, Quaternion.identity, transform.parent);
             Explosion goSc = go.GetComponent<Explosion>();

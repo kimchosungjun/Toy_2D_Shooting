@@ -1,5 +1,7 @@
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -29,6 +31,9 @@ public class Player : MonoBehaviour
     [SerializeField] int maxHp = 3;
     [SerializeField] int curHp;
     int beforeHp;
+    bool invincibilty;//무적
+    [SerializeField] float invincibiltyTime = 1f;//무적시간
+    float invincibiltyTimer;
 
     [Header("플레이어 레벨")]
     [SerializeField] int minLevel = 1;
@@ -60,7 +65,7 @@ public class Player : MonoBehaviour
         if (collision.tag == Tool.GetTag(GameTags.Enemy))
         {
             //체력 감소
-            hit();
+            Hit();
             
             //체력이 0이 되면 게임이 끝남
             //점수가 랭크인이 되면 이름 입력하는 기능
@@ -125,6 +130,39 @@ public class Player : MonoBehaviour
         checkPlayerPos();
 
         shoot();
+        checkInvincibilty();
+    }
+
+    private void checkInvincibilty()//무적일때만 작동하여 일정시간이 지나고 나면 다시 무적을 풀어줌
+    {
+        if (invincibilty == false) return;
+
+        if (invincibiltyTimer > 0f)
+        {
+            invincibiltyTimer -= Time.deltaTime;
+            if (invincibiltyTimer <= 0f)
+            {
+                setSprInvincibilty(false);
+            }
+        }
+    }
+
+    private void setSprInvincibilty(bool _value)
+    {
+        Color color = spriteRenderer.color;
+        if (_value == true)//무적이 된것처럼 투명도를 줄여 유저에게 무적이라 알려줌
+        {
+            color.a = 0.5f;
+            invincibilty = true;
+            invincibiltyTimer = invincibiltyTime;
+        }
+        else
+        {
+            color.a = 1.0f;
+            invincibilty = false;
+            invincibiltyTimer = 0f;
+        }
+        spriteRenderer.color = color;
     }
 
     /// <summary>
@@ -152,7 +190,7 @@ public class Player : MonoBehaviour
         {
             limiter = gameManager._Limiter;
         }
-        transform.position = limiter.checkMovePosition(transform.position);
+        transform.position = limiter.checkMovePosition(transform.position, false);
     }
 
     private void shoot()
@@ -254,8 +292,13 @@ public class Player : MonoBehaviour
         goSc.ShootPlayer();
     }
 
-    private void hit()
+    public void Hit()
     {
+        //무적상태라면 데미지를 받지 않음
+        if (invincibilty == true) return;
+
+        setSprInvincibilty(true);
+        
         curHp--;
         if(curHp < 0)
         {
@@ -264,7 +307,7 @@ public class Player : MonoBehaviour
         GameManager.Instance.SetHp(maxHp, curHp);
 
         curLevel--;
-        if(curLevel <minLevel)
+        if(curLevel < minLevel)
         {
             curLevel = minLevel;
         }

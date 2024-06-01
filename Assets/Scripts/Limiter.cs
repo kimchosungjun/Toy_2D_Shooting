@@ -10,13 +10,17 @@ public class Limiter : MonoBehaviour
     [SerializeField] Vector2 viewPortLimitMin;
     [SerializeField] Vector2 viewPortLimitMax;
 
+    [Header("보스용 화면 경계")]
+    [SerializeField] Vector2 viewPortLimitMinBoss;
+    [SerializeField] Vector2 viewPortLimitMaxBoss;
+
     Vector2 worldPosLimitMin;//실제 데이터는 이 변수가 가지고있음
     public Vector2 WorldPosLimitMin//이 데이터는 변수로 보이지만 함수로 작동
-    { 
-        get 
-        { 
-            return worldPosLimitMin; 
-        } 
+    {
+        get
+        {
+            return worldPosLimitMin;
+        }
     }
 
     Vector2 worldPosLimitMax;
@@ -47,17 +51,19 @@ public class Limiter : MonoBehaviour
     /// <summary>
     /// 코드에 의해 플레이어케릭터가 카메라 밖으로 이동하지 못하도록 정의
     /// </summary>
-    public Vector3 checkMovePosition(Vector3 _pos)
+    public Vector3 checkMovePosition(Vector3 _pos, bool _isBoss = false)
     {
         Vector3 viewPortPos = cam.WorldToViewportPoint(_pos);
 
-        if (viewPortPos.x < viewPortLimitMin.x)//0~1
+        //조건연산자, 삼항연산자, 다항식
+
+        if (viewPortPos.x < (_isBoss == false ? viewPortLimitMin.x : viewPortLimitMinBoss.x))//0~1
         {
-            viewPortPos.x = viewPortLimitMin.x;
+            viewPortPos.x = (_isBoss == false ? viewPortLimitMin.x : viewPortLimitMinBoss.x);
         }
-        else if (viewPortPos.x > viewPortLimitMax.x)
+        else if (viewPortPos.x > (_isBoss == false ? viewPortLimitMax.x : viewPortLimitMaxBoss.x))
         {
-            viewPortPos.x = viewPortLimitMax.x;
+            viewPortPos.x = (_isBoss == false ? viewPortLimitMax.x : viewPortLimitMaxBoss.x);
         }
 
         if (viewPortPos.y < viewPortLimitMin.y)
@@ -72,10 +78,21 @@ public class Limiter : MonoBehaviour
         return cam.ViewportToWorldPoint(viewPortPos);
     }
 
+    public bool checkMovePosition(Vector3 _pos)
+    {
+        Vector3 viewPortPos = cam.WorldToViewportPoint(_pos);
+
+        if (viewPortPos.x < viewPortLimitMinBoss.x || viewPortPos.x > viewPortLimitMaxBoss.x)//0~1
+        {
+            return true;
+        }
+        return false;
+    }
+
     //튜플
     public (bool _x, bool _y) IsReflectItem(Vector3 _pos, Vector3 _dir)//화면경계에 닿았거나 화면밖으로 나갔다면 반사해야한다고 알려줌
     {
-        bool rX = false; 
+        bool rX = false;
         bool rY = false;
 
         if ((_pos.x < worldPosLimitMin.x && _dir.x < 0) || (_pos.x > worldPosLimitMax.x && _dir.x > 0))
