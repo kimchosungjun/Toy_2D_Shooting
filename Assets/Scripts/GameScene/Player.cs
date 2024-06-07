@@ -6,47 +6,51 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    Animator anim;
-
-    [Header("플레이어 설정"), SerializeField, Tooltip("플레이어의 이동속도")] float moveSpeed;
-
-    Vector3 moveDir;
-
-    [Header("총알")]
-    [SerializeField] GameObject fabBullet;//플레이어가 복제해서 사용할 원본 총알
-    [SerializeField] GameObject fabBullet2;//플레이어가 복제해서 사용할 원본 총알
-    [SerializeField] GameObject fabBullet3;//플레이어가 복제해서 사용할 원본 총알
-    [SerializeField] GameObject fabBullet4;//플레이어가 복제해서 사용할 원본 총알
-    [SerializeField] GameObject fabBullet5;//플레이어가 복제해서 사용할 원본 총알
-    [SerializeField] Transform dynamicObject;
-    [SerializeField] bool autoFire = false;//자동공격기능
-    [SerializeField] float fireRateTime = 0.5f;//이시간이 지나면 총알이 발사됨
-    float fireTimer = 0;
-
+    #region 컴포넌트
     GameManager gameManager;
-    GameObject fabExplosion;
-    SpriteRenderer spriteRenderer;
     Limiter limiter;
-    [Header("체력")]
-    [SerializeField] int maxHp = 3;
-    [SerializeField] int curHp;
-    int beforeHp;
-    bool invincibilty;//무적
+    Animator anim;
+    SpriteRenderer spriteRenderer;
+    #endregion
+
+    #region 변수
+    [Header("플레이어 설정")] 
+    [SerializeField, Tooltip("이동 속도")] float moveSpeed;
+    [SerializeField, Tooltip("최대 체력")] int maxHp = 3;
+    [SerializeField, Tooltip("현재 체력, 변경 시 Onvalidate 호출")] int curHp;
+    Vector3 moveDir; // Horizontal, Vertical 입력
+    int beforeHp;  
+
+    [Header("플레이어 피격 설정")]
+    GameObject fabExplosion;
     [SerializeField] float invincibiltyTime = 1f;//무적시간
+    bool invincibilty; 
     float invincibiltyTimer;
 
+    [Header("총알")]
+    [SerializeField] GameObject fabBullet;
+    [SerializeField] GameObject fabBullet2;
+    [SerializeField] GameObject fabBullet3;
+    [SerializeField] GameObject fabBullet4;
+    [SerializeField] GameObject fabBullet5;
+    [SerializeField, Tooltip("생성되는 오브젝트의 부모")] Transform dynamicObject;
+    [SerializeField, Tooltip("자동 공격 여부")] bool autoFire = false; 
+    [SerializeField, Tooltip("총알 장전 시간")] float fireRateTime = 0.5f; 
+    [SerializeField, Tooltip("총알이 발사되는 위치")] Transform shootTrs;
+    float fireTimer = 0;
+    
     [Header("플레이어 레벨")]
     [SerializeField] int minLevel = 1;
     [SerializeField] int maxLevel = 5;
     [SerializeField, Range(1, 5)] int curLevel;
+    #endregion
 
-    //[SerializeField] float distanceBullet;//2레벨 이상시 총알이 중심으로 부터 벌어지는 거리 //플레이어 전방에서 발사
-    //[SerializeField] float angleBullet;//4레벨 이상시 총알이 회전된 값;
-    [SerializeField] Transform shootTrs;
-    //[SerializeField] Transform shootTrsLevel4;//4레벨 이상시 총알이 발사될 위치
-    //[SerializeField] Transform shootTrsLevel5;//4레벨 이상시 총알이 발사될 위치
+    /// <summary>
+    /// 인스펙터에서 어떤값이 변동이 생기면 호출
+    /// </summary>
 
-    private void OnValidate()//인스펙터에서 어떤값이 변동이 생기면 호출
+    #region 유니티 내장 기능
+    private void OnValidate()
     {
         if (Application.isPlaying == false)
         {
@@ -64,22 +68,12 @@ public class Player : MonoBehaviour
     {
         if (collision.tag == Tool.GetTag(GameTags.Enemy))
         {
-            //체력 감소
             Hit();
-            
-            //체력이 0이 되면 게임이 끝남
-            //점수가 랭크인이 되면 이름 입력하는 기능
-            //메인 메뉴에서 1~10등 랭크
-
-            //짧은시간 무적
-
-            //게이지 변화코드 실행
         }
         else if (collision.tag == Tool.GetTag(GameTags.Item))
         {
             Item item = collision.GetComponent<Item>();
-            Destroy(item.gameObject);//이 함수는 이 함수가 모든 동작 마치게 되면 삭제해달라 라고 예약하는 기능
-
+            Destroy(item.gameObject); //이 함수는 이 함수가 모든 동작 마치게 되면 삭제해달라 라고 예약하는 기능
             if (item.GetItemType() == Item.eItemType.PowerUp)
             {
                 curLevel++;
@@ -90,7 +84,6 @@ public class Player : MonoBehaviour
             }
             else if (item.GetItemType() == Item.eItemType.HpRecovery)
             {
-                //체력 회복
                 curHp++;
                 if (curHp > maxHp)
                 {
@@ -100,13 +93,9 @@ public class Player : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    //private static  void initCode()
-    //{
-    //    Debug.Log("initCode");
-    //}
-
+    #region 유니티 라이프 사이클
     private void Awake()
     {
         anim = transform.GetComponent<Animator>();
@@ -117,7 +106,6 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        //cam = GameObject.Find("Main Camera").GetComponent<Camera>();
         gameManager = GameManager.Instance;
         fabExplosion = gameManager.FabExplosion;
         gameManager._Player = this;
@@ -125,15 +113,16 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        moving();
-        doAnimation();
-        checkPlayerPos();
+        Moving();
+        DoAnimation();
+        CheckPlayerPos();
 
-        shoot();
-        checkInvincibilty();
+        Shoot();
+        CheckInvincibilty();
     }
+    #endregion
 
-    private void checkInvincibilty()//무적일때만 작동하여 일정시간이 지나고 나면 다시 무적을 풀어줌
+    private void CheckInvincibilty()//무적일때만 작동하여 일정시간이 지나고 나면 다시 무적을 풀어줌
     {
         if (invincibilty == false) return;
 
@@ -168,7 +157,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 플레이어 기체의 기동을 정의합니다.
     /// </summary>
-    private void moving()
+    private void Moving()
     {
         moveDir.x = Input.GetAxisRaw("Horizontal");//왼쪽 혹은 오른쪽 입력// -1 0 1
         moveDir.y = Input.GetAxisRaw("Vertical");//위 혹은 아래 입력 // -1 0 1
@@ -179,12 +168,12 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 애니메이션에 어떤 애니메이션을 실행할지 파라미터를 전달 합니다.
     /// </summary>
-    private void doAnimation()//하나의 함수에는 하나의 기능
+    private void DoAnimation()//하나의 함수에는 하나의 기능
     {
         anim.SetInteger("Horizontal", (int)moveDir.x);
     }
 
-    private void checkPlayerPos()
+    private void CheckPlayerPos()
     {
         if (limiter == null)
         {
@@ -193,11 +182,11 @@ public class Player : MonoBehaviour
         transform.position = limiter.checkMovePosition(transform.position, false);
     }
 
-    private void shoot()
+    private void Shoot()
     {
         if (autoFire == false && Input.GetKeyDown(KeyCode.Space) == true)//유저가 스페이스 키를 누른다면
         {
-            createBullet();
+            CreateBullet();
         }
         else if (autoFire == true)
         {
@@ -205,13 +194,13 @@ public class Player : MonoBehaviour
             fireTimer += Time.deltaTime;//1초가 지나면 1이 될수있도록 소수점들이 fireTimer에 쌓임
             if (fireTimer > fireRateTime)
             {
-                createBullet();
+                CreateBullet();
                 fireTimer = 0;
             }
         }
     }
 
-    private void createBullet()//총알을 생성한다
+    private void CreateBullet()//총알을 생성한다
     {
         if (curLevel == 1)
         {
@@ -279,13 +268,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void instBullet(Vector3 _pos, Vector3 _angle)
+    private void InstantiateBullet(Vector3 _pos, Vector3 _angle)
     {
         GameObject go = Instantiate(fabBullet, _pos, Quaternion.Euler(_angle), dynamicObject);
         Bullet goSc = go.GetComponent<Bullet>();
         goSc.ShootPlayer();
     }
-    private void instBullet(Vector3 _pos, Quaternion _quat)
+    private void InstantiateBullet(Vector3 _pos, Quaternion _quat)
     {
         GameObject go = Instantiate(fabBullet, _pos, _quat, dynamicObject);
         Bullet goSc = go.GetComponent<Bullet>();

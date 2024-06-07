@@ -8,17 +8,19 @@ using Newtonsoft.Json;
 
 public class StartSceneManager : MonoBehaviour
 {
+    [Header("버튼")]
     [SerializeField] Button btnStart;
     [SerializeField] Button btnRanking;
     [SerializeField] Button btnExitRanking;
     [SerializeField] Button btnExit;
-    [SerializeField] GameObject viewRank;
 
     [Header("랭크 프리팹")]
     [SerializeField] GameObject fabRank;
     [SerializeField] Transform contents;
+    [SerializeField] GameObject viewRank;
 
     private string dataPath;
+    
     private void Awake()
     {
         #region 수업내용
@@ -37,12 +39,7 @@ public class StartSceneManager : MonoBehaviour
         //{
         //    gameStart(1, 2, 3, 4, 5);
         //});
-        #endregion
-        btnStart.onClick.AddListener(gameStart);
-        btnRanking.onClick.AddListener(showRanking);
-        btnExitRanking.onClick.AddListener(() => { viewRank.SetActive(false); });
-        btnExit.onClick.AddListener(gameExit);
-        #region 수업내용
+
         //json
         //string 문자열, 키와 벨류
         //{key:value};
@@ -101,70 +98,82 @@ public class StartSceneManager : MonoBehaviour
 
         //List<cUserData> afterData = JsonConvert.DeserializeObject<List<cUserData>>(jsonData);
         #endregion
+        BtnAddListner();
+        InitRankView();
+    }
 
-        initRankView();
-        viewRank.SetActive(false);
+    /// <summary>
+    /// 시작 씬의 버튼에 메서드 연결
+    /// </summary>
+    private void BtnAddListner()
+    {
+        btnExit.onClick.AddListener(GameExit);
+        btnStart.onClick.AddListener(GameStart);
+        btnRanking.onClick.AddListener(ShowRanking);
+        btnExitRanking.onClick.AddListener(() => { viewRank.SetActive(false); });
     }
 
     /// <summary>
     /// 랭크가 저장되어 있다면 저장된 랭크 데이터를 이용해서 랭크뷰를 만들어주고
     /// 랭크가 저장되어 있지 않다면 비어있는 랭크를 만들어 랭크뷰를 만들어줌
     /// </summary>
-    private void initRankView()
+    private void InitRankView()
     {
-        List<cUserData> listUserData = null;
-        clearRankView();
+        List<UserData> listUserData = null;
+        ClearRankView();
         if (PlayerPrefs.HasKey(Tool.rankKey) == true)//랭크 데이터가 저장이 되어있었다면
         {
-            listUserData = JsonConvert.DeserializeObject<List<cUserData>>(PlayerPrefs.GetString(Tool.rankKey));
+            listUserData = JsonConvert.DeserializeObject<List<UserData>>(PlayerPrefs.GetString(Tool.rankKey));
         }
         else//랭크데이터가 저장되어 있지 않았다면
         {
-            listUserData = new List<cUserData>();
+            listUserData = new List<UserData>();
             int rankCount = Tool.rankCount;
             for (int iNum = 0; iNum < rankCount; ++iNum)
             {
-                listUserData.Add(new cUserData() { Name = "None", Score = 0 });
+                listUserData.Add(new UserData() { Name = "None", Score = 0 });
             }
         }
 
         int count = listUserData.Count;
         for (int iNum = 0; iNum < count; ++iNum)
         {
-            cUserData data = listUserData[iNum];
-
+            UserData data = listUserData[iNum];
             GameObject go = Instantiate(fabRank, contents);
-            FabRanking goSc = go.GetComponent<FabRanking>();
-            goSc.SetData((iNum + 1).ToString(), data.Name, data.Score);
+            FabRanking fabRanking = go.GetComponent<FabRanking>();
+            fabRanking.SetData((iNum + 1).ToString(), data.Name, data.Score);
         }
+        viewRank.SetActive(false);
     }
 
-    private void clearRankView()
+    private void ClearRankView()
     {
         int count = contents.childCount;
-        for (int iNum = count - 1; iNum > -1; --iNum)
+        for (int idx = count - 1; idx > -1; idx--)
         {
-            Destroy(contents.GetChild(iNum).gameObject);
+            Destroy(contents.GetChild(idx).gameObject);
         }
     }
 
-    private void gameStart()
+    private void GameStart()
     {
         
     }
 
-    private void showRanking()
+    private void ShowRanking()
     {
         viewRank.SetActive(true);
     }
 
-    private void gameExit()
+    /// <summary>
+    /// 에디터를 이용해서 게임 종료 
+    /// </summary>
+    private void GameExit()
     {
         //에디터에서 플레이를 끄는 방법, 에디터 전용 기능
         //빌드를 통해서 밖으로 가지고 나가서는 안됨
         //전처리,코드가 조건에 의해서 본인이 없는것처럼 혹은 있는것처럼 
         //동작하게 해줌
-
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else//유니티 에디터에서 실행하지 않았을때
