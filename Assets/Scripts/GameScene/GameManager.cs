@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,8 +18,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] bool isSpawn = false;//보스가 등장하거나 원하는 사유가 있을때 이값을
     [SerializeField] Color sliderDefaultColor;
     [SerializeField] Color sliderBossSpawnColor;
-
-    WaitForSeconds halfTime = new WaitForSeconds(0.5f);
 
     bool isSpawnBoss = false;//보스가 현재 게임에 등장 중인지
     bool IsSpawnBoss
@@ -107,6 +106,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text textScore;
     private int score;
 
+    private bool gameStart = false;
+
+    [Header("스타트텍스트")]
+    [SerializeField] TMP_Text textStart;
+
+    [Header("게임오버메뉴")]
+    [SerializeField] GameObject objGameOverMenu;
+    [SerializeField] TMP_Text textGameOverMenuScore;
+    [SerializeField] TMP_Text textGameOverMenuRank;
+    [SerializeField] TMP_Text textGameOverMenuBtn;
+    [SerializeField] TMP_InputField IFGameOverMenuRank;
+    [SerializeField] Button btnGameOverMenu;
+
+
     public bool GetPlayerPosition(out Vector3 _pos)
     {
         _pos = default;
@@ -175,14 +188,59 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-
+        StartCoroutine(doStartText());
     }
 
-    // Update is called once per frame
+    IEnumerator doStartText()
+    {
+        Color color = textStart.color;
+        color.a = 0f;
+        textStart.color = color;
+
+        while (true)
+        {
+            color = textStart.color;
+            color.a += Time.deltaTime;
+            if (color.a > 1.0f)
+            {
+                color.a = 1.0f;
+            }
+            textStart.color = color;
+
+            if (color.a == 1.0f)
+            {
+                break;
+            }
+            yield return null;
+        }
+
+        while (true)
+        {
+            color = textStart.color;
+            color.a -= Time.deltaTime;
+            if (color.a < 0.0f)
+            {
+                color.a = 0.0f;
+            }
+            textStart.color = color;
+
+            if (color.a == 0.0f)
+            {
+                break;
+            }
+            yield return null;
+        }
+
+        Destroy(textStart.gameObject);
+
+        gameStart = true;
+        isSpawn = true;
+    }
+    
     void Update()//프레임당 한번 실행되는 함수
     {
+        if (gameStart == false) return;
         createEnemy();
-
         checkTimer();
     }
 
@@ -323,5 +381,75 @@ public class GameManager : MonoBehaviour
         initSlider();
 
         IsSpawnBoss = false;
+    }
+
+    public void GameOver()
+    {
+        List<cUserData> listUserData = 
+            JsonConvert.DeserializeObject<List<cUserData>>(PlayerPrefs.GetString(Tool.rankKey));
+
+        int rank = -1;//0 이 1등
+        int count = listUserData.Count;
+        for (int iNum = 0; iNum < count; iNum++)
+        {
+            cUserData userData = listUserData[iNum];
+            if (userData.Score < score)//내점수가 랭크보다 높다면 해당 랭크를 차지 해야함
+            {
+                rank = iNum;
+                break;
+            }
+        }
+
+        textGameOverMenuScore.text = $"점수 : {score.ToString("d8")}";
+
+        //플레이어가 랭크에 들었는지 확인,몇등인지 데이터 필요
+        if (rank != -1)
+        {
+            textGameOverMenuRank.text = $"랭킹 : {rank + 1}등";
+            IFGameOverMenuRank.gameObject.SetActive(true);
+            textGameOverMenuBtn.text = "등록";
+        }
+        else//랭크안에 들지 못했다면 이름을 적을 필요가 없음
+        {
+            textGameOverMenuRank.text = "랭크인 하지 못했습니다";
+            IFGameOverMenuRank.gameObject.SetActive(false);
+            textGameOverMenuBtn.text = "메인메뉴로";
+        }
+
+        //textGameOverMenuRank.text = rank != -1 ? $"랭킹 : {rank + 1}등" : "랭크인 하지 못했습니다";
+        //IFGameOverMenuRank.gameObject.SetActive(rank != -1);
+        //textGameOverMenuBtn.text = rank != -1 ? "등록" : "메인메뉴로";
+
+        btnGameOverMenu.onClick.AddListener(() => 
+        {
+            //랭크인을 했다면 랭크와 이름을 저장
+            if (rank != -1)
+            {
+                string name = IFGameOverMenuRank.text;
+
+                if (name == string.Empty)
+                {
+                    name = "AAA";
+                }
+
+                cUserData newRank = new cUserData();
+                newRank.Score = score;
+                newRank.Name = name;
+
+                listUserData.Insert(rank, newRank);
+                listUserData.RemoveAt(listUserData.Count - 1);
+
+                string value = JsonConvert.SerializeObject(listUserData);
+                PlayerPrefs.SetString(PlayerPrefs.GetString(Tool.rankKey), value);
+            }
+
+            FunctionFade.Instance.ActiveFade(true, () => 
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+                FunctionFade.Instance.ActiveFade(false);
+            });
+        });
+
+        objGameOverMenu.SetActive(true);
     }
 }

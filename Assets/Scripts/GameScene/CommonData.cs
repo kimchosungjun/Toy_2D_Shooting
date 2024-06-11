@@ -19,7 +19,7 @@ public class Tool
     }
 }
 
-public class UserData
+public class cUserData
 {
     public string Name;
     public int Score;
