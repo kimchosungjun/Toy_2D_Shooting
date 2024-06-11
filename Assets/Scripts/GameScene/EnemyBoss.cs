@@ -62,13 +62,6 @@ public class EnemyBoss : Enemy
     //}
     //[SerializeField] List<cPattern> listPattern;
 
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();//부모가 점수를 올려줌
-        gameManager.createItem(transform.position, Item.eItemType.PowerUp);
-        gameManager.createItem(transform.position, Item.eItemType.HpRecovery);
-    }
-
     protected override void Start()
     {
         gameManager = GameManager.Instance;
@@ -256,6 +249,10 @@ public class EnemyBoss : Enemy
             //직사각형
             goSc.setImageSize(spriteRenderer.sprite.rect.width);//현재 기체의 이미지 길이를 넣어줌
 
+            gameManager.createItem(transform.position, Item.eItemType.PowerUp);
+            gameManager.createItem(transform.position, Item.eItemType.HpRecovery);
+
+            gameManager.AddScore(score);
             //gameManager.AddKillCount();//보스가 죽었다고 전달 //다시 적들이 출동하도록 설계
             gameManager.KillBoss();
         }

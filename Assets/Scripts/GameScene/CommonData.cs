@@ -12,6 +12,7 @@ public class Tool
 {
     public static int rankCount = 10;
     public static string rankKey = "RankKey";
+    public static bool isStartingMainScene = false;
 
     public static string GetTag(GameTags _value)
     {

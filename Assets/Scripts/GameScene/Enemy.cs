@@ -46,14 +46,6 @@ public class Enemy : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    protected virtual void OnDestroy()
-    {
-        if (gameManager != null)
-        { 
-            gameManager.AddScore(score);
-        }
-    }
-
     protected virtual void Start()
     {
         defaultSprite = spriteRenderer.sprite;
@@ -111,7 +103,7 @@ public class Enemy : MonoBehaviour
             { 
                 gameManager.createItem(transform.position);
             }
-
+            gameManager.AddScore(score);
             gameManager.AddKillCount();
         }
         else

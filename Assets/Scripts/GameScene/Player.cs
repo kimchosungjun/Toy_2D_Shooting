@@ -321,7 +321,7 @@ public class Player : MonoBehaviour
             //직사각형
             goSc.setImageSize(spriteRenderer.sprite.rect.width);//현재 기체의 이미지 길이를 넣어줌
 
-            
+            gameManager.GameOver();
         }
     }
 }

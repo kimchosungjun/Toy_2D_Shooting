@@ -156,6 +156,8 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Tool.isStartingMainScene == false)
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         //1개만 존재해야함
         if (Instance == null)
         {
@@ -440,7 +442,7 @@ public class GameManager : MonoBehaviour
                 listUserData.RemoveAt(listUserData.Count - 1);
 
                 string value = JsonConvert.SerializeObject(listUserData);
-                PlayerPrefs.SetString(PlayerPrefs.GetString(Tool.rankKey), value);
+                PlayerPrefs.SetString(Tool.rankKey, value);
             }
 
             FunctionFade.Instance.ActiveFade(true, () => 

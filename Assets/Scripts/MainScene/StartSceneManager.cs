@@ -37,6 +37,8 @@ public class StartSceneManager : MonoBehaviour
         //    gameStart(1, 2, 3, 4, 5);
         //});
         #endregion
+        Tool.isStartingMainScene = true;
+
         btnStart.onClick.AddListener(gameStart);
         btnRanking.onClick.AddListener(showRanking);
         btnExitRanking.onClick.AddListener(() => { viewRank.SetActive(false); });
