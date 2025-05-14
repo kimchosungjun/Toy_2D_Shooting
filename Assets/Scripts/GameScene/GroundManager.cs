@@ -30,7 +30,7 @@ public class GroundManager : MonoBehaviour
         matMid = sprMidRenderer.material;
         matBot = sprBotRenderer.material;
     }
-
+    
     void Update()//사양이 좋은 컴퓨터 1초에 700번, 사양이 안좋은 컴퓨터 1초에 30번
     {
         Vector2 vecTop = matTop.mainTextureOffset;
@@ -54,4 +54,25 @@ public class GroundManager : MonoBehaviour
         matMid.mainTextureOffset = vecMid; 
         matBot.mainTextureOffset = vecBot; 
     }
+
+    public void InfiniteMap()
+    {
+        Vector2 vecTop = matTop.mainTextureOffset;
+        Vector2 vecMid = matMid.mainTextureOffset;
+        Vector2 vecBot = matBot.mainTextureOffset;
+
+        vecTop += new Vector2(0, speedTop * Time.deltaTime);
+        vecMid += new Vector2(0, speedMid * Time.deltaTime);
+        vecBot += new Vector2(0, speedBot * Time.deltaTime);
+
+        vecTop.y = Mathf.Repeat(vecTop.y, 1.0f);
+        vecMid.y = Mathf.Repeat(vecMid.y, 1.0f);
+        vecBot.y = Mathf.Repeat(vecBot.y, 1.0f);
+
+        matTop.mainTextureOffset = vecTop;
+        matMid.mainTextureOffset = vecMid;
+        matBot.mainTextureOffset = vecBot;
+    }
 }
+
+

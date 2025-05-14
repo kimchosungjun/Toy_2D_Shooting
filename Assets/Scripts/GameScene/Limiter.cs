@@ -7,8 +7,7 @@ public class Limiter : MonoBehaviour
 {
     //rect bound
     [Header("화면 경계")]//viewport 기준
-    [SerializeField] Vector2 viewPortLimitMin;
-    [SerializeField] Vector2 viewPortLimitMax;
+  
 
     [Header("보스용 화면 경계")]
     [SerializeField] Vector2 viewPortLimitMinBoss;
@@ -42,6 +41,10 @@ public class Limiter : MonoBehaviour
     /// <summary>
     /// 게임시작시 뷰포인트의 화면 경계 변수들을 월드 포지션으로 초기화 합니다.
     /// </summary>
+
+    [SerializeField] Vector2 viewPortLimitMin;
+    [SerializeField] Vector2 viewPortLimitMax;
+
     private void initWorldPos()
     {
         worldPosLimitMin = cam.ViewportToWorldPoint(viewPortLimitMin);
@@ -51,11 +54,12 @@ public class Limiter : MonoBehaviour
     /// <summary>
     /// 코드에 의해 플레이어케릭터가 카메라 밖으로 이동하지 못하도록 정의
     /// </summary>
+    //조건연산자, 삼항연산자, 다항식
+    
     public Vector3 checkMovePosition(Vector3 _pos, bool _isBoss = false)
     {
         Vector3 viewPortPos = cam.WorldToViewportPoint(_pos);
 
-        //조건연산자, 삼항연산자, 다항식
 
         if (viewPortPos.x < (_isBoss == false ? viewPortLimitMin.x : viewPortLimitMinBoss.x))//0~1
         {
@@ -90,7 +94,9 @@ public class Limiter : MonoBehaviour
     }
 
     //튜플
-    public (bool _x, bool _y) IsReflectItem(Vector3 _pos, Vector3 _dir)//화면경계에 닿았거나 화면밖으로 나갔다면 반사해야한다고 알려줌
+    //화면경계에 닿았거나 화면밖으로 나갔다면 반사해야한다고 알려줌
+
+    public (bool _x, bool _y) IsReflectItem(Vector3 _pos, Vector3 _dir)
     {
         bool rX = false;
         bool rY = false;

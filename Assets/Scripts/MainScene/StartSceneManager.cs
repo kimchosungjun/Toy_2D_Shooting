@@ -115,11 +115,11 @@ public class StartSceneManager : MonoBehaviour
     {
         List<cUserData> listUserData = null;
         clearRankView();
-        if (PlayerPrefs.HasKey(Tool.rankKey) == true)//랭크 데이터가 저장이 되어있었다면
+        if (PlayerPrefs.HasKey(Tool.rankKey) == true)
         {
             listUserData = JsonConvert.DeserializeObject<List<cUserData>>(PlayerPrefs.GetString(Tool.rankKey));
         }
-        else//랭크데이터가 저장되어 있지 않았다면
+        else
         {
             listUserData = new List<cUserData>();
             int rankCount = Tool.rankCount;

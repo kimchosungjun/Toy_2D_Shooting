@@ -2622,7 +2622,7 @@ MonoBehaviour:
   killCount: 100
   curKillCount: 0
   textSlider: {fileID: 2034502353}
-  bossSpawnTime: 60
+  bossSpawnTime: 10
   bossSpawnTimer: 0
   textScore: {fileID: 1486466149}
   textStart: {fileID: 2023426650}
@@ -2644,10 +2644,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f3a6b9528609b4dafbe374755f9d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewPortLimitMin: {x: 0.1, y: 0.05}
-  viewPortLimitMax: {x: 0.9, y: 0.95}
   viewPortLimitMinBoss: {x: 0.25, y: 0}
   viewPortLimitMaxBoss: {x: 0.75, y: 0}
+  viewPortLimitMin: {x: 0.1, y: 0.05}
+  viewPortLimitMax: {x: 0.9, y: 0.95}
 --- !u!1 &1522986134
 GameObject:
   m_ObjectHideFlags: 0
